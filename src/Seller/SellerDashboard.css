@@ -1,0 +1,101 @@
+.dashboard-container {
+  padding: 1.5rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.dashboard-heading {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  color: #333;
+}
+
+.stats-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: space-between;
+}
+
+.stat-card {
+  flex: 1 1 30%;
+  background-color: #f0f4f8;
+  padding: 1.25rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-width: 200px;
+}
+
+.stat-label {
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #222;
+  margin-top: 0.5rem;
+}
+
+.dashboard-section {
+  margin-top: 2.5rem;
+}
+
+.dashboard-subheading {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.responsive-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.responsive-table th {
+  padding: 12px;
+  background-color: #007bff;
+  color: white;
+  font-weight: 600;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.responsive-table td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+  color: #333;
+}
+
+.no-data {
+  text-align: center;
+  padding: 1rem;
+  color: #777;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .stats-container {
+    flex-direction: column;
+  }
+
+  .stat-card {
+    flex: 1 1 100%;
+    min-width: unset;
+  }
+
+  .responsive-table {
+    min-width: 100%;
+    font-size: 0.9rem;
+  }
+}
