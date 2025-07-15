@@ -135,6 +135,7 @@ function ManageBanners() {
                               : "bg-blue-600 hover:bg-blue-700"
                           }`}
                         >
+                          
                           {isProcessing ? "Adding..." : "Add to Slide"}
                         </button>
                       )}
