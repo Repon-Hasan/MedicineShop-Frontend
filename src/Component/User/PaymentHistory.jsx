@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import AuthContext from '../../../AuthContext';
+import { Helmet } from 'react-helmet-async';
 
 const PaymentHistory = () => {
   const { user } = useContext(AuthContext);
@@ -26,6 +27,10 @@ const PaymentHistory = () => {
 
   return (
     <div className="p-6 max-w-5xl mx-auto">
+            <Helmet>
+              <title>Shop Medicines | MediShop</title>
+              <meta name="description" content="Browse and search medicines by name, generic, company. Add items to your cart easily." />
+            </Helmet>
       <h2 className="text-2xl font-semibold mb-4">Payment History</h2>
       {loading ? (
         <p>Loading payments...</p>

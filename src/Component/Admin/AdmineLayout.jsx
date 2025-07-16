@@ -7,6 +7,7 @@ import ManageCategories from './ManageCategories';
 import ManagePayments from './ManagePayments';
 import SalesReport from './SalesReport';
 import ManageBanners from './ManageBanners';
+import { Helmet } from 'react-helmet-async';
 
 function AdminLayout() {
   const [activeTab, setActiveTab] = useState('home');
@@ -22,6 +23,10 @@ function AdminLayout() {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       {/* Mobile Toggle Button */}
+            <Helmet>
+              <title>AdminDashboard | MediShop</title>
+              <meta name="description" content="Browse and search medicines by name, generic, company. Add items to your cart easily." />
+            </Helmet>
       <div className="md:hidden flex items-center justify-between bg-white px-4 py-3 shadow">
         <h2 className="text-xl font-bold text-blue-700">Admin Panel</h2>
         <button onClick={toggleSidebar} className="text-2xl">

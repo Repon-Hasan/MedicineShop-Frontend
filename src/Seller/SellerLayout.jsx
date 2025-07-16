@@ -4,6 +4,7 @@ import ManageMedicines from './ManageMedicines';
 import PaymentHistory from './PaymentHistory';
 import Advertisement from './Advertisement';
 import { FaBars, FaTimes } from 'react-icons/fa';
+import { Helmet } from 'react-helmet-async';
 
 function SellerLayout() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -17,6 +18,10 @@ function SellerLayout() {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       {/* Mobile Header */}
+            <Helmet>
+              <title>SellerDashboard | MediShop</title>
+              <meta name="description" content="Browse and search medicines by name, generic, company. Add items to your cart easily." />
+            </Helmet>
       <div className="flex justify-between items-center bg-white shadow-md p-4 md:hidden">
         <h2 className="text-xl font-bold text-green-700">Seller Panel</h2>
         <button
