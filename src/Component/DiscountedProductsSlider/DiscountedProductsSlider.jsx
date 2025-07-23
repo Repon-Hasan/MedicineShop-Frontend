@@ -13,7 +13,6 @@ import axiosSecure from '../../utils/axiosSecure';
 function DiscountedProductsSlider() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
-
   useEffect(() => {
     const fetchDiscounted = async () => {
       try {
@@ -27,9 +26,9 @@ function DiscountedProductsSlider() {
     fetchDiscounted();
   }, []);
 
-  const handleCardClick = (id) => {
+  const handleCardClick = (category) => {
     // Navigate to category details page using category as param
-    navigate(`/category/${id}`);
+    navigate(`/category/${category}`);
   };
 
   if (products.length === 0) {
@@ -54,7 +53,7 @@ function DiscountedProductsSlider() {
         {products.map((prod) => (
           <SwiperSlide key={prod._id}>
             <div
-              onClick={() => handleCardClick(prod._id)}
+              onClick={() => handleCardClick(prod.category)}
               className="cursor-pointer bg-white rounded-lg shadow-md p-4 flex flex-col items-center hover:shadow-lg transition"
             >
               <div className="h-48 w-full bg-gray-100 overflow-hidden rounded mb-4">

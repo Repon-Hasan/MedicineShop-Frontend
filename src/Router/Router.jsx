@@ -63,17 +63,18 @@ export const router = createBrowserRouter([
                 <Checkout></Checkout>
     </Elements>
       },
- {
-    path: "/category/:id",
-    loader: async ({ params }) => {
-      const res = await fetch(`https://backend-nu-livid-37.vercel.app/category/${params.id}`);
-      if (!res.ok) {
-        throw new Response("Failed to fetch category data", { status: res.status });
-      }
-      return res.json();
-    },
-    element: <CategoryDetails />,
+{
+  path: "/category/:id",
+  loader: async ({ params }) => {
+    const res = await fetch(`https://backend-nu-livid-37.vercel.app/category/${params.id}`);
+    if (!res.ok) {
+      throw new Response("Failed to fetch category data", { status: res.status });
+    }
+    return res.json();
   },
+  element: <CategoryDetails />,
+  errorElement: <div className="p-6 text-red-500 text-center">Category not found or failed to load.</div>,
+}
     //   {
     //     path: "about", // route: "/about"
     //     element: <About />,

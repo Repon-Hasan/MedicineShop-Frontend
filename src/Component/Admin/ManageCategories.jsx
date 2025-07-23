@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import axiosSecure from '../../utils/axiosSecure';
 
 const CLOUDINARY_UPLOAD_PRESET = 'public_signup';
 const CLOUDINARY_CLOUD_NAME = 'dum3hqgvv';
@@ -9,11 +10,20 @@ function ManageCategories() {
   const [categories, setCategories] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ categoryName: '', imageFile: null });
+  const [formData, setFormData] = useState({
+    categoryName: '',
+    imageFile: null,
+    generic: '',
+    description: '',
+    company: '',
+    unit: '',
+    price: '',
+    discount: ''
+  });
   const [updateData, setUpdateData] = useState({ id: '', categoryName: '' });
 
   useEffect(() => {
-    axios.get('https://backend-nu-livid-37.vercel.app/categories')
+    axiosSecure.get('https://backend-nu-livid-37.vercel.app/allMedicines')
       .then(res => setCategories(res.data))
       .catch(() => Swal.fire('Error', 'Failed to load categories', 'error'));
   }, []);
@@ -29,26 +39,67 @@ function ManageCategories() {
 
   const handleAddCategory = async () => {
     try {
-      if (!formData.imageFile) return Swal.fire('Error', 'Please select an image', 'error');
+      const {
+        categoryName, imageFile, generic, description,
+        company, unit, price, discount
+      } = formData;
 
+      if (!imageFile || !categoryName.trim()) {
+        return Swal.fire('Error', 'Please provide a category name and image', 'error');
+      }
+
+      // Upload image to Cloudinary
       const imageForm = new FormData();
-      imageForm.append('file', formData.imageFile);
+      imageForm.append('file', imageFile);
       imageForm.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
 
-      const imgRes = await axios.post(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, imageForm);
+      const imgRes = await axios.post(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+        imageForm
+      );
+
       const imageURL = imgRes.data.secure_url;
 
-      const res = await axios.post('https://backend-nu-livid-37.vercel.app/categories', {
-        categoryName: formData.categoryName,
-        categoryImage: imageURL,
+      // Construct full payload
+      const categoryPayload = {
+        name: `__category__${categoryName}`,
+        generic,
+        description,
+        category: categoryName,
+        company,
+        unit,
+        price: parseFloat(price),
+        discount: parseFloat(discount),
+        imageURL,
+        email: 'admin@admin.com'
+      };
+
+      console.log('Payload:', categoryPayload);
+
+      await axios.post('https://backend-nu-livid-37.vercel.app/medicines', categoryPayload);
+
+      setCategories(prev => [...prev, {
+        _id: Date.now().toString(),
+        category: categoryName,
+        imageURL
+      }]);
+
+      setFormData({
+        categoryName: '',
+        imageFile: null,
+        generic: '',
+        description: '',
+        company: '',
+        unit: '',
+        price: '',
+        discount: ''
       });
 
-      setCategories(prev => [...prev, { ...res.data, categoryImage: imageURL }]);
-      setFormData({ categoryName: '', imageFile: null });
       setIsAddModalOpen(false);
       Swal.fire('Success', 'Category added successfully!', 'success');
     } catch (err) {
-      Swal.fire('Error', 'Failed to add category', 'error');
+      console.error(err);
+      Swal.fire('Error', err?.response?.data?.error || 'Failed to add category', 'error');
     }
   };
 
@@ -65,7 +116,7 @@ function ManageCategories() {
 
     if (result.isConfirmed) {
       try {
-        await axios.delete(`https://backend-nu-livid-37.vercel.app/categories/${id}`);
+        await axios.delete(`https://backend-nu-livid-37.vercel.app/allMedicines/categories/${id}`);
         setCategories(prev => prev.filter(cat => cat._id !== id));
         Swal.fire('Deleted!', 'Category has been deleted.', 'success');
       } catch {
@@ -76,16 +127,18 @@ function ManageCategories() {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(`https://backend-nu-livid-37.vercel.app/categories/${updateData.id}`, {
+      await axios.put(`https://backend-nu-livid-37.vercel.app/allMedicines/categories/${updateData.id}`, {
         categoryName: updateData.categoryName,
       });
+
       setCategories(prev =>
         prev.map(cat =>
           cat._id === updateData.id
-            ? { ...cat, categoryName: updateData.categoryName }
+            ? { ...cat, category: updateData.categoryName }
             : cat
         )
       );
+
       setIsUpdateModalOpen(false);
       Swal.fire('Updated!', 'Category updated successfully!', 'success');
     } catch {
@@ -119,11 +172,11 @@ function ManageCategories() {
             {categories.map((cat, index) => (
               <tr key={cat._id} className="border-b hover:bg-gray-50 transition">
                 <td className="p-3">{index + 1}</td>
-                <td className="p-3">{cat.categoryName}</td>
+                <td className="p-3">{cat.category}</td>
                 <td className="p-3">
                   <img
-                    src={cat.categoryImage}
-                    alt={cat.categoryName}
+                    src={cat.imageURL || 'https://via.placeholder.com/150'}
+                    alt={cat.category}
                     className="h-16 w-16 object-cover rounded shadow"
                   />
                 </td>
@@ -131,7 +184,7 @@ function ManageCategories() {
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => {
-                        setUpdateData({ id: cat._id, categoryName: cat.categoryName });
+                        setUpdateData({ id: cat._id, categoryName: cat.category });
                         setIsUpdateModalOpen(true);
                       }}
                       className="bg-yellow-500 text-white px-3 py-1 rounded hover:bg-yellow-600 transition"
@@ -161,17 +214,28 @@ function ManageCategories() {
 
       {/* Add Modal */}
       {isAddModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 px-4 overflow-auto">
           <div className="bg-white p-6 rounded-md w-full max-w-md shadow-lg">
             <h3 className="text-xl font-semibold mb-4 text-gray-800">Add New Category</h3>
-            <input
-              type="text"
-              name="categoryName"
-              placeholder="Category Name"
-              className="w-full border rounded px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={formData.categoryName}
-              onChange={handleInputChange}
-            />
+            {[
+              { name: 'categoryName', placeholder: 'Category Name' },
+              { name: 'generic', placeholder: 'Generic' },
+              { name: 'description', placeholder: 'Description' },
+              { name: 'company', placeholder: 'Company' },
+              { name: 'unit', placeholder: 'Unit' },
+              { name: 'price', placeholder: 'Price', type: 'number' },
+              { name: 'discount', placeholder: 'Discount', type: 'number' },
+            ].map(({ name, placeholder, type = 'text' }) => (
+              <input
+                key={name}
+                type={type}
+                name={name}
+                placeholder={placeholder}
+                className="w-full border rounded px-3 py-2 mb-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={formData[name]}
+                onChange={handleInputChange}
+              />
+            ))}
             <input
               type="file"
               name="imageFile"
