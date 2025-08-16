@@ -1,3 +1,4 @@
+// CartPage.jsx
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
@@ -76,6 +77,7 @@ function CartPage() {
       try {
         await axios.delete(`https://backend-nu-livid-37.vercel.app/selectedMedicines/remove/${id}`);
         setCart(prev => prev.filter(m => m._id !== id));
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
         Swal.fire('Removed!', 'Medicine has been removed.', 'success');
       } catch (err) {
         console.error('Failed to remove medicine:', err);
@@ -97,6 +99,7 @@ function CartPage() {
       try {
         await axios.delete(`https://backend-nu-livid-37.vercel.app/selectedMedicines/clear/${user.email}`);
         setCart([]);
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
         Swal.fire('Cleared!', 'Your cart has been emptied.', 'success');
       } catch (err) {
         console.error('Failed to clear cart:', err);
@@ -133,9 +136,7 @@ function CartPage() {
         <title>My Cart | MediShop</title>
         <meta
           name="description"
-          content={`You have ${cart.length} medicine${cart.length !== 1 ? 's' : ''} in your cart. Total amount is $${total.toFixed(
-            2
-          )}. Proceed to checkout to complete your purchase.`}
+          content={`You have ${cart.length} medicine${cart.length !== 1 ? 's' : ''} in your cart. Total amount is $${total.toFixed(2)}.`}
         />
       </Helmet>
 
@@ -145,7 +146,6 @@ function CartPage() {
         <p className="text-center text-gray-600">Your cart is empty.</p>
       ) : (
         <>
-          {/* Table with horizontal scroll on small devices */}
           <div className="overflow-x-auto mb-6">
             <table className="w-full border text-sm sm:text-base">
               <thead className="bg-green-100">
@@ -186,7 +186,6 @@ function CartPage() {
             </table>
           </div>
 
-          {/* Action Section */}
           <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-3">
             <button
               onClick={clearCart}

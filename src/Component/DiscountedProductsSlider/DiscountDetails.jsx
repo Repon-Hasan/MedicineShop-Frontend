@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import axios from 'axios';
 import AuthContext from '../../../AuthContext';
 
-function CategoryDetails() {
+function DiscountDetails() {
   const medicines = useLoaderData();
   const { user } = useContext(AuthContext);
 
@@ -59,6 +59,9 @@ function CategoryDetails() {
     }
   };
 
+  const getDiscountedPrice = (price, discount) =>
+    discount ? (price * (1 - discount / 100)).toFixed(2) : price.toFixed(2);
+
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -96,7 +99,20 @@ function CategoryDetails() {
                   <td className="px-4 py-2 border">{med.category}</td>
                   <td className="px-4 py-2 border">{med.company}</td>
                   <td className="px-4 py-2 border">{med.unit}</td>
-                  <td className="px-4 py-2 border">${med.price.toFixed(2)}</td>
+                  <td className="px-4 py-2 border">
+                    {med.discount ? (
+                      <>
+                        <span className="text-green-700 font-semibold">
+                          ${getDiscountedPrice(med.price, med.discount)}
+                        </span>{' '}
+                        <span className="line-through text-gray-400">
+                          ${med.price.toFixed(2)}
+                        </span>
+                      </>
+                    ) : (
+                      <span>${med.price.toFixed(2)}</span>
+                    )}
+                  </td>
                   <td className="px-4 py-2 border text-center">
                     <div className="flex flex-col sm:flex-row sm:justify-center gap-2">
                       <button
@@ -137,7 +153,7 @@ function CategoryDetails() {
               <img
                 src={selectedMedicine.imageURL}
                 alt={selectedMedicine.name}
-                className="w-full h-full object-cover rounded border"
+                className="w-full h-auto object-cover rounded border"
               />
             </div>
 
@@ -147,8 +163,24 @@ function CategoryDetails() {
               <p><strong>Category:</strong> {selectedMedicine.category}</p>
               <p><strong>Company:</strong> {selectedMedicine.company}</p>
               <p><strong>Unit:</strong> {selectedMedicine.unit}</p>
-              <p><strong>Price:</strong> ${selectedMedicine.price.toFixed(2)}</p>
-              <p><strong>Discount:</strong> {selectedMedicine.discount}%</p>
+              <p>
+                <strong>Price:</strong>{' '}
+                {selectedMedicine.discount ? (
+                  <>
+                    <span className="text-green-700 font-semibold">
+                      ${getDiscountedPrice(selectedMedicine.price, selectedMedicine.discount)}
+                    </span>{' '}
+                    <span className="line-through text-gray-400">
+                      ${selectedMedicine.price.toFixed(2)}
+                    </span>
+                  </>
+                ) : (
+                  <span>${selectedMedicine.price.toFixed(2)}</span>
+                )}
+              </p>
+              {selectedMedicine.discount && (
+                <p><strong>Discount:</strong> {selectedMedicine.discount}%</p>
+              )}
             </div>
           </div>
         </div>
@@ -161,7 +193,7 @@ function CategoryDetails() {
           <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
             {cart.map((med) => (
               <li key={med._id}>
-                {med.name} - ${med.price.toFixed(2)}
+                {med.name} – ${getDiscountedPrice(med.price, med.discount)}
               </li>
             ))}
           </ul>
@@ -171,4 +203,4 @@ function CategoryDetails() {
   );
 }
 
-export default CategoryDetails;
+export default DiscountDetails;

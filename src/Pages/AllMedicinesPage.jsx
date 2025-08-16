@@ -84,6 +84,9 @@ function AllMedicinesPage() {
 
         setCart((prev) => [...prev, medicineToSave]);
 
+        // Dispatch event so Navbar or any listener can update cart count
+        window.dispatchEvent(new CustomEvent('cartUpdated'));
+
         Swal.fire('Added!', `${medicine.name} has been added to your cart.`, 'success');
       } catch (error) {
         console.error('Error saving selected medicine:', error);
@@ -146,7 +149,7 @@ function AllMedicinesPage() {
   }
 
   return (
-    <div className="p-4 sm:p-6 max-w-7xl mx-auto">
+    <div className="p-4 sm:p-6 max-w-7xl mx-auto" id='/available'>
       <Helmet>
         <title>Shop Medicines | MediShop</title>
         <meta name="description" content="Browse and search medicines by name, generic, company. Add items to your cart easily." />
@@ -248,8 +251,14 @@ function AllMedicinesPage() {
 
       {/* Modal */}
       {selectedMedicine && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" onClick={closeModal}>
-          <div className="bg-white rounded-lg max-w-lg w-11/12 p-4 sm:p-6 relative" onClick={(e) => e.stopPropagation()}>
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+          onClick={closeModal}
+        >
+          <div
+            className="bg-white rounded-lg max-w-lg w-11/12 p-4 sm:p-6 relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
               onClick={closeModal}
               className="absolute top-3 right-3 text-gray-600 hover:text-gray-900 text-xl"
@@ -265,11 +274,21 @@ function AllMedicinesPage() {
                 className="w-full sm:w-48 object-contain rounded"
               />
               <div className="text-sm">
-                <p><strong>Generic:</strong> {selectedMedicine.generic}</p>
-                <p><strong>Description:</strong> {selectedMedicine.description}</p>
-                <p><strong>Category:</strong> {selectedMedicine.category}</p>
-                <p><strong>Company:</strong> {selectedMedicine.company}</p>
-                <p><strong>Unit:</strong> {selectedMedicine.unit}</p>
+                <p>
+                  <strong>Generic:</strong> {selectedMedicine.generic}
+                </p>
+                <p>
+                  <strong>Description:</strong> {selectedMedicine.description}
+                </p>
+                <p>
+                  <strong>Category:</strong> {selectedMedicine.category}
+                </p>
+                <p>
+                  <strong>Company:</strong> {selectedMedicine.company}
+                </p>
+                <p>
+                  <strong>Unit:</strong> {selectedMedicine.unit}
+                </p>
                 <p>
                   <strong>Price:</strong> ${selectedMedicine.price.toFixed(2)}{' '}
                   {selectedMedicine.discount > 0 && (

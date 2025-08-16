@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router';  // <-- import useNavigate
+import { useNavigate } from 'react-router';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
+import { motion } from 'framer-motion';
 
-// Import Swiper styles
+// Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+
 import axiosSecure from '../../utils/axiosSecure';
 
 function DiscountedProductsSlider() {
   const [products, setProducts] = useState([]);
   const navigate = useNavigate();
+
   useEffect(() => {
     const fetchDiscounted = async () => {
       try {
@@ -27,8 +30,7 @@ function DiscountedProductsSlider() {
   }, []);
 
   const handleCardClick = (category) => {
-    // Navigate to category details page using category as param
-    navigate(`/category/${category}`);
+    navigate(`/discountCategory/${category}`);
   };
 
   if (products.length === 0) {
@@ -36,8 +38,9 @@ function DiscountedProductsSlider() {
   }
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Discounted Products</h2>
+    <div className="p-6" id='discounted'>
+      <h2 className="text-3xl font-bold mb-4 text-center text-green-600">Discounted Products</h2>
+
       <Swiper
         modules={[Navigation, Pagination]}
         spaceBetween={20}
@@ -50,9 +53,14 @@ function DiscountedProductsSlider() {
           1280: { slidesPerView: 4 },
         }}
       >
-        {products.map((prod) => (
+        {products.map((prod, index) => (
           <SwiperSlide key={prod._id}>
-            <div
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1, duration: 0.5, ease: 'easeOut' }}
+              whileHover={{ scale: 1.03 }}
               onClick={() => handleCardClick(prod.category)}
               className="cursor-pointer bg-white rounded-lg shadow-md p-4 flex flex-col items-center hover:shadow-lg transition"
             >
@@ -60,7 +68,7 @@ function DiscountedProductsSlider() {
                 <img
                   src={prod.imageURL}
                   alt={prod.name}
-                  className="max-h-full max-w-full object-contain mx-auto"
+                  className=" object-cover w-full h-full "
                 />
               </div>
               <h3 className="text-lg font-semibold mb-1 text-center">{prod.name}</h3>
@@ -76,7 +84,15 @@ function DiscountedProductsSlider() {
               <span className="mt-2 inline-block bg-red-100 text-red-700 text-xs px-2 py-1 rounded">
                 {prod.discount}% off
               </span>
-            </div>
+
+              {/* Button */}
+              <button
+                onClick={() => handleCardClick(prod.category)}
+                className="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition w-full"
+              >
+                See More
+              </button>
+            </motion.div>
           </SwiperSlide>
         ))}
       </Swiper>

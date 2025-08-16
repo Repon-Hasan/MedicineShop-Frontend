@@ -5,6 +5,9 @@ import DiscountedProductsSlider from '../DiscountedProductsSlider/DiscountedProd
 import Brands from './Brands'
 import Testimonials from './Testimonials'
 import { Helmet } from 'react-helmet-async'
+import WhyChooseUs from './WhyChooseUs'
+import SalesPromotion from './SalesPromotion'
+import Newsletter from './Newsletter'
 
 function Home() {
   return (
@@ -13,9 +16,12 @@ function Home() {
         <title>Home | MediShop</title>
       </Helmet>
  <SliderSection></SliderSection>
+<WhyChooseUs></WhyChooseUs>
  <CategoryCards></CategoryCards>
+ <SalesPromotion></SalesPromotion>
  <DiscountedProductsSlider></DiscountedProductsSlider>
  <Brands></Brands>
+ <Newsletter></Newsletter>
  <Testimonials></Testimonials>
     </div>
   )

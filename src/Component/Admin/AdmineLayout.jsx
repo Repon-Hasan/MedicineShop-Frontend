@@ -21,7 +21,7 @@ function AdminLayout() {
     }`;
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
+    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100 mt-8">
       {/* Mobile Toggle Button */}
             <Helmet>
               <title>AdminDashboard | MediShop</title>

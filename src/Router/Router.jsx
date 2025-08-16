@@ -16,6 +16,9 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import InvoicePage from "../Pages/InvoicePage";
 import Privaterout from "../Component/PrivateRoute/Privaterout";
+import DiscountDetails from "../Component/DiscountedProductsSlider/DiscountDetails";
+import Contact from "../Component/Contact/Contact";
+import About from "../Component/About/About";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -74,11 +77,27 @@ export const router = createBrowserRouter([
   },
   element: <CategoryDetails />,
   errorElement: <div className="p-6 text-red-500 text-center">Category not found or failed to load.</div>,
-}
-    //   {
-    //     path: "about", // route: "/about"
-    //     element: <About />,
-    //   },
+},
+{
+  path: "/discountCategory/:id",
+  loader: async ({ params }) => {
+    const res = await fetch(`https://backend-nu-livid-37.vercel.app/category/${params.id}`);
+    if (!res.ok) {
+      throw new Response("Failed to fetch category data", { status: res.status });
+    }
+    return res.json();
+  },
+  element: <DiscountDetails></DiscountDetails>,
+  errorElement: <div className="p-6 text-red-500 text-center">Category not found or failed to load.</div>,
+},
+      {
+        path: "contact", // route: "/about"
+        element: <Contact></Contact>,
+      },
+      {
+        path: "about", // route: "/about"
+        element: <About></About>,
+      },
     //   {
     //     path: "contact", // route: "/contact"
     //     element: <Contact />,
