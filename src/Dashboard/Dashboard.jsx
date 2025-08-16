@@ -3,6 +3,7 @@ import AuthContext from '../../AuthContext';
 import UserMain from '../Component/User/UserMain';
 import SellerLayout from '../Seller/SellerLayout';
 import AdmineLayout from '../Component/Admin/AdmineLayout';
+import UserLayout from '../Component/User/UserLayout';
 
 function Dashboard() {
   const [userData, setUserData] = useState(null);
@@ -54,7 +55,7 @@ console.log("I am user data",userData)
   return (
     <div className="p-6 text-xl font-semibold text-center">
       {userData.role === 'admin' && <AdmineLayout></AdmineLayout>}
-      {userData.role === 'user' && <UserMain></UserMain>}
+      {userData.role === 'user' && <UserLayout></UserLayout>}
       {userData.role === 'seller' && <SellerLayout></SellerLayout>}
     </div>
   );

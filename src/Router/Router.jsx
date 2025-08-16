@@ -19,6 +19,7 @@ import Privaterout from "../Component/PrivateRoute/Privaterout";
 import DiscountDetails from "../Component/DiscountedProductsSlider/DiscountDetails";
 import Contact from "../Component/Contact/Contact";
 import About from "../Component/About/About";
+import ErrorComponent from "../Pages/ErrorComponent";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -97,6 +98,11 @@ export const router = createBrowserRouter([
       {
         path: "about", // route: "/about"
         element: <About></About>,
+      },
+      {
+        path: "*", // route: "/about"
+        element: <ErrorComponent></ErrorComponent>,
+      
       },
     //   {
     //     path: "contact", // route: "/contact"

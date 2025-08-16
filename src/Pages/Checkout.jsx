@@ -144,9 +144,11 @@ const Checkout = () => {
         backgroundColor: '#fff',
         borderRadius: 8,
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        marginTop:"8rem"
       }}
+    
     >
-      <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>Checkout</h2>
+      <h2 style={{ textAlign: 'center', marginBottom: '1.5rem',  }}>Checkout</h2>
       <p style={{ fontSize: '1.25rem', fontWeight: 'bold', textAlign: 'center', marginBottom: '2rem' }}>
         Total: ${totalAmount.toFixed(2)}
       </p>

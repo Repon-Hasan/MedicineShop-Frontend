@@ -61,7 +61,7 @@ function DiscountedProductsSlider() {
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.5, ease: 'easeOut' }}
               whileHover={{ scale: 1.03 }}
-              onClick={() => handleCardClick(prod.category)}
+             
               className="cursor-pointer bg-white rounded-lg shadow-md p-4 flex flex-col items-center hover:shadow-lg transition"
             >
               <div className="h-48 w-full bg-gray-100 overflow-hidden rounded mb-4">

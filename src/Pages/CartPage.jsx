@@ -122,7 +122,7 @@ function CartPage() {
 
   if (userData?.role !== 'user') {
     return (
-      <div className="text-red-500 text-center mt-10 font-semibold text-lg">
+      <div className="text-red-500 text-center mt-10 font-bold text-lg py-10">
         Access Denied: Only users with a "user" role can access this page.
       </div>
     );

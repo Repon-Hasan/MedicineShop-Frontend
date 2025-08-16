@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useLoaderData } from 'react-router';
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -8,12 +8,48 @@ function DiscountDetails() {
   const medicines = useLoaderData();
   const { user } = useContext(AuthContext);
 
+  const [role, setRole] = useState(null);
+  const [loadingRole, setLoadingRole] = useState(true);
+
   const [selectedMedicine, setSelectedMedicine] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cart, setCart] = useState([]);
 
-  const openModal = (medicine) => {
-    setSelectedMedicine(medicine);
+  // Fetch user role
+  useEffect(() => {
+    const fetchRole = async () => {
+      if (user?.email) {
+        try {
+          const res = await axios.get(`https://backend-nu-livid-37.vercel.app/user/${user.email}`);
+          setRole(res.data.role || null);
+        } catch (err) {
+          console.error('Failed to fetch user role:', err);
+          setRole(null);
+        } finally {
+          setLoadingRole(false);
+        }
+      } else {
+        setLoadingRole(false);
+      }
+    };
+
+    fetchRole();
+  }, [user]);
+
+  // Check if the medicine is already selected in backend
+  const isAlreadySelected = async (medicineId) => {
+    try {
+      const res = await axios.get(`https://backend-nu-livid-37.vercel.app/selectedMedicines/${user.email}`);
+      const selected = res.data || [];
+      return selected.some((item) => item.medicine._id === medicineId);
+    } catch (error) {
+      console.error('Error checking selected medicines:', error);
+      return false;
+    }
+  };
+
+  const openModal = (med) => {
+    setSelectedMedicine(med);
     setIsModalOpen(true);
   };
 
@@ -22,21 +58,25 @@ function DiscountDetails() {
     setIsModalOpen(false);
   };
 
-  const handleSelect = async (medicine) => {
+  const handleSelect = async (med) => {
     if (!user?.email) {
       Swal.fire('Please login', 'You must be logged in to select a medicine.', 'warning');
       return;
     }
-
-    const alreadyInCart = cart.find((m) => m._id === medicine._id);
-    if (alreadyInCart) {
-      Swal.fire('Already Selected', `${medicine.name} is already in your cart.`, 'info');
+    if (role !== 'user') {
+      Swal.fire('Access Denied', 'Only users can select medicines.', 'error');
       return;
     }
 
     try {
+      const alreadySelected = await isAlreadySelected(med._id);
+      if (alreadySelected) {
+        Swal.fire('Already Selected', `${med.name} is already in your cart.`, 'info');
+        return;
+      }
+
       const { data: fullMedicine } = await axios.get(
-        `https://backend-nu-livid-37.vercel.app/allMedicines/details/${medicine._id}`
+        `https://backend-nu-livid-37.vercel.app/allMedicines/details/${med._id}`
       );
 
       const medicineToSave = {
@@ -50,12 +90,15 @@ function DiscountDetails() {
       });
 
       setCart((prev) => [...prev, medicineToSave]);
-
       window.dispatchEvent(new CustomEvent('cartUpdated'));
-      Swal.fire('Added!', `${medicine.name} added to cart.`, 'success');
+      Swal.fire('Added!', `${med.name} added to cart.`, 'success');
     } catch (error) {
       console.error('Error adding to cart:', error);
-      Swal.fire('Error', 'Failed to add medicine to cart.', 'error');
+      if (error.response?.status === 409) {
+        Swal.fire('Already Selected', `${med.name} is already in your cart.`, 'info');
+      } else {
+        Swal.fire('Error', 'Failed to add medicine to cart.', 'error');
+      }
     }
   };
 
@@ -74,7 +117,7 @@ function DiscountDetails() {
         </p>
       </div>
 
-      {/* Medicines Table */}
+      {/* Table */}
       {medicines.length === 0 ? (
         <p className="text-center text-gray-500">No medicines found in this category.</p>
       ) : (
@@ -121,12 +164,15 @@ function DiscountDetails() {
                       >
                         👁️ View
                       </button>
-                      <button
-                        onClick={() => handleSelect(med)}
-                        className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
-                      >
-                        ➕ Select
-                      </button>
+                      {/* Show Select button only to 'user' role */}
+                      {!loadingRole && role === 'user' && (
+                        <button
+                          onClick={() => handleSelect(med)}
+                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
+                        >
+                          ➕ Select
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -148,7 +194,6 @@ function DiscountDetails() {
             </button>
 
             <h3 className="text-2xl font-bold mb-4 text-center text-gray-800">{selectedMedicine.name}</h3>
-
             <div className="flex justify-center mb-4">
               <img
                 src={selectedMedicine.imageURL}
@@ -188,7 +233,7 @@ function DiscountDetails() {
 
       {/* Cart Preview */}
       {cart.length > 0 && (
-        <div className="mt-10 p-5 bg-gray-50 border rounded shadow max-w-3xl mx-auto">
+        <div className="mt-10 p-5 bg-gray-50 border rounded-shadow max-w-3xl mx-auto">
           <h3 className="text-xl font-semibold mb-3 text-gray-800">🛒 Selected Medicines</h3>
           <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
             {cart.map((med) => (

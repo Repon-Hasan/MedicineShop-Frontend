@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useLoaderData } from 'react-router';
 import Swal from 'sweetalert2';
 import axios from 'axios';
@@ -11,6 +11,28 @@ function CategoryDetails() {
   const [selectedMedicine, setSelectedMedicine] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [cart, setCart] = useState([]);
+  const [role, setRole] = useState(null);
+  const [loadingRole, setLoadingRole] = useState(true);
+
+  // ✅ Fetch user role only when user.email exists
+  useEffect(() => {
+    const fetchRole = async () => {
+      if (user?.email) {
+        try {
+          const res = await axios.get(`https://backend-nu-livid-37.vercel.app/user/${user.email}`);
+          setRole(res.data.role || null);
+        } catch (err) {
+          console.error('Failed to fetch user role:', err);
+          setRole(null);
+        } finally {
+          setLoadingRole(false);
+        }
+      } else {
+        setLoadingRole(false);
+      }
+    };
+    fetchRole();
+  }, [user]);
 
   const openModal = (medicine) => {
     setSelectedMedicine(medicine);
@@ -25,6 +47,11 @@ function CategoryDetails() {
   const handleSelect = async (medicine) => {
     if (!user?.email) {
       Swal.fire('Please login', 'You must be logged in to select a medicine.', 'warning');
+      return;
+    }
+
+    if (role !== 'user') {
+      Swal.fire('Access Denied', 'Only users can select medicines.', 'error');
       return;
     }
 
@@ -50,14 +77,17 @@ function CategoryDetails() {
       });
 
       setCart((prev) => [...prev, medicineToSave]);
-
       window.dispatchEvent(new CustomEvent('cartUpdated'));
+
       Swal.fire('Added!', `${medicine.name} added to cart.`, 'success');
     } catch (error) {
       console.error('Error adding to cart:', error);
       Swal.fire('Error', 'Failed to add medicine to cart.', 'error');
     }
   };
+
+  const getDiscountedPrice = (price, discount) =>
+    discount ? (price * (1 - discount / 100)).toFixed(2) : price.toFixed(2);
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto">
@@ -96,7 +126,20 @@ function CategoryDetails() {
                   <td className="px-4 py-2 border">{med.category}</td>
                   <td className="px-4 py-2 border">{med.company}</td>
                   <td className="px-4 py-2 border">{med.unit}</td>
-                  <td className="px-4 py-2 border">${med.price.toFixed(2)}</td>
+                  <td className="px-4 py-2 border">
+                    {med.discount ? (
+                      <>
+                        <span className="text-green-700 font-semibold">
+                          ${getDiscountedPrice(med.price, med.discount)}
+                        </span>{' '}
+                        <span className="line-through text-gray-400">
+                          ${med.price.toFixed(2)}
+                        </span>
+                      </>
+                    ) : (
+                      <span>${med.price.toFixed(2)}</span>
+                    )}
+                  </td>
                   <td className="px-4 py-2 border text-center">
                     <div className="flex flex-col sm:flex-row sm:justify-center gap-2">
                       <button
@@ -105,12 +148,16 @@ function CategoryDetails() {
                       >
                         👁️ View
                       </button>
-                      <button
-                        onClick={() => handleSelect(med)}
-                        className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
-                      >
-                        ➕ Select
-                      </button>
+
+                      {/* ✅ Show only if role is user */}
+                      {!loadingRole && role === 'user' && (
+                        <button
+                          onClick={() => handleSelect(med)}
+                          className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm"
+                        >
+                          ➕ Select
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -148,7 +195,9 @@ function CategoryDetails() {
               <p><strong>Company:</strong> {selectedMedicine.company}</p>
               <p><strong>Unit:</strong> {selectedMedicine.unit}</p>
               <p><strong>Price:</strong> ${selectedMedicine.price.toFixed(2)}</p>
-              <p><strong>Discount:</strong> {selectedMedicine.discount}%</p>
+              {selectedMedicine.discount && (
+                <p><strong>Discount:</strong> {selectedMedicine.discount}%</p>
+              )}
             </div>
           </div>
         </div>

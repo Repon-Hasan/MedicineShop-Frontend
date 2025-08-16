@@ -67,7 +67,7 @@ function Navbar() {
           </span>
         )}
       </NavLink>
-      <NavLink to="/dashboard" className={({ isActive }) => isActive ? activeClass : linkClass}>Dashboard</NavLink>
+  
       <NavLink to="/contact" className={({ isActive }) => isActive ? activeClass : linkClass}>Contact</NavLink>
     </>
   );
