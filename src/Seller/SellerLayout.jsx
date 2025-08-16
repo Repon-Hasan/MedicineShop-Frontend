@@ -5,6 +5,7 @@ import PaymentHistory from './PaymentHistory';
 import Advertisement from './Advertisement';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import { Helmet } from 'react-helmet-async';
+import Profile from './Profile';
 
 function SellerLayout() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -23,7 +24,7 @@ function SellerLayout() {
               <meta name="description" content="Browse and search medicines by name, generic, company. Add items to your cart easily." />
             </Helmet>
       <div className="flex justify-between items-center bg-white shadow-md p-4 md:hidden">
-        <h2 className="text-xl font-bold text-green-700">Seller Panel</h2>
+      
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="text-gray-700 text-2xl focus:outline-none"
@@ -38,12 +39,14 @@ function SellerLayout() {
           menuOpen ? 'block' : 'hidden'
         } md:relative fixed top-16 z-50 md:top-0 md:z-0 p-6 space-y-4`}
       >
+          <h2 className="text-4xl font-extrabold text-green-700 mt-3">Seller Panel</h2>
         <nav className="space-y-2">
           {[
             { key: 'overview', label: 'Sales Overview' },
             { key: 'medicines', label: 'Manage Medicines' },
             { key: 'payments', label: 'Payment History' },
             { key: 'ads', label: 'Ask For Advertisement' },
+            { key: 'profile', label: 'Profile' },
           ].map((item) => (
             <button
               key={item.key}
@@ -62,10 +65,13 @@ function SellerLayout() {
 
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-8 mt-16 md:mt-0">
+        
         {activeTab === 'overview' && <DashboardOverview />}
         {activeTab === 'medicines' && <ManageMedicines />}
         {activeTab === 'payments' && <PaymentHistory />}
         {activeTab === 'ads' && <Advertisement />}
+        {activeTab === 'profile' && <Profile/>}
+       
       </main>
     </div>
   );

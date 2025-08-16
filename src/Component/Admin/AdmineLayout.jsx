@@ -8,6 +8,7 @@ import ManagePayments from './ManagePayments';
 import SalesReport from './SalesReport';
 import ManageBanners from './ManageBanners';
 import { Helmet } from 'react-helmet-async';
+import AdmineProfile from './AdmineProfile';
 
 function AdminLayout() {
   const [activeTab, setActiveTab] = useState('home');
@@ -60,6 +61,9 @@ function AdminLayout() {
           <button onClick={() => { setActiveTab('ads'); setIsSidebarOpen(false); }} className={buttonClass('ads')}>
             Manage Banner Ads
           </button>
+          <button onClick={() => { setActiveTab('profile'); setIsSidebarOpen(false); }} className={buttonClass('profile')}>
+            Profile
+          </button>
         </nav>
       </aside>
 
@@ -71,6 +75,7 @@ function AdminLayout() {
         {activeTab === 'payments' && <ManagePayments />}
         {activeTab === 'reports' && <SalesReport />}
         {activeTab === 'ads' && <ManageBanners />}
+        {activeTab === 'profile' && <AdmineProfile/>}
       </main>
     </div>
   );
