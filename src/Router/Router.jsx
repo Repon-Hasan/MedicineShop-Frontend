@@ -20,6 +20,7 @@ import DiscountDetails from "../Component/DiscountedProductsSlider/DiscountDetai
 import Contact from "../Component/Contact/Contact";
 import About from "../Component/About/About";
 import ErrorComponent from "../Pages/ErrorComponent";
+import AllMedicine from "../Pages/AllMedicine";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -51,7 +52,7 @@ export const router = createBrowserRouter([
       },
       {
         path: "/shop", // route: "/"
-        element: <Privaterout><AllMedicinesPage></AllMedicinesPage></Privaterout>,
+        element: <Privaterout><AllMedicine></AllMedicine></Privaterout>,
       },
       {
         path: "/cart", // route: "/"
